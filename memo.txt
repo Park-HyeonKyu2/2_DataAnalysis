@@ -1,0 +1,684 @@
+1. requests — 웹페이지 요청
+
+import requests
+
+requests.get()
+웹페이지에 GET 요청을 보냄
+response = requests.get(url)
+
+headers
+브라우저처럼 접속하기 위한 정보
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+response = requests.get(url, headers=headers)
+
+requests.status_code
+응답 상태 코드 확인
+print(response.status_code)
+- 200: 성공
+- 404: 페이지 없음
+- 403: 접근 거부
+- 500: 서버 오류
+
+response.raise_for_status()
+요청에 오류가 있으면 예외 발생
+
+response.text
+응답받은 HTML을 문자열로 가져옴
+html = response.text
+
+response.json()
+JSON 형식의 응답을 파이썬 자료형으로 변환
+data = response.json()
+
+2. BeautifulSoup - HTML 분석
+
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(response.text, "html.parser")
+
+select()
+CSS 선택자에 맞는 모든 요소를 리스트로 가져옴
+item = soup.select(".itml")
+
+select_one()
+CSS 선택자에 맞는 첫 번째 요소 하나를 가져옴
+item = soup.select_one("iteml")
+
+find()
+조건에 맞는 첫 번째 태그를 찾음.
+title = soup.find("hi")
+
+find_all()
+조건에 맞는 모든 태그를 리스트로 가져옴
+titles = soup.find_all("hi")
+
+.text
+태그 안의 글자를 가져옴
+text = title.text
+
+get_text()
+태그 안의 글자를 가져옴
+text = title.get_text()
+
+공백 제거:
+text = title.get_text(strip=True)
+
+strip()
+문자열 앞뒤 공백과 줄바꿈을 제거
+text = text.strip()
+
+get()
+HTML 속성값을 가져옴
+link = tag.get("href")
+image = tag.get("src")
+
+link = tag["href"] 와 비슷하나, link = tag["href"]는 속성이 없으면 오류가 발생한다.
+
+.attrs
+태그의 모든 속성을 확인
+print(tag.attrs)
+
+.parent
+parent = tag.parent
+
+.children
+바로 아래 자식 요소들을 가져옴
+for child in tag.children:
+    print(child)
+
+.find_next()
+현재 태그 다음에 나오는 조건에 맞는 태그를 찾음
+next_tag = tag.find_next("div")
+
+3. Selenium — 브라우저 조작
+from selenium import webdriver
+driver = webdriver.Chrome() # 크롬 브라우저 자동 실행하고 이를 제어하는 드라이버 생성
+
+driver.get()
+해당 주소로 이동
+driver.get("https://www.example.com")
+
+driver.quit()
+브라우저 전체를 종료.
+
+driver.close()
+현재 창 하나만 닫음.
+
+driver.back()
+이전 페이지로 이동.
+
+driver.forward()
+다음 페이지로 이동.
+
+driver.refresh()
+현재 페이지 새로고침.
+
+driver.current_url
+현재 페이지 주소 확인.
+
+driver.title
+현재 페이지 제목 확인.
+
+driver.page_source
+현재 페이지의 HTML 가져오기.
+html = driver.page_source
+
+4. Selenium 요소 찾기
+from selenium.webdriver.common.by import By
+
+find_element()
+조건에 맞는 요소 하나를 찾음.
+element = driver.find_element(By.ID, "top_search")
+
+find_elements()
+조건에 맞는 모든 요소를 리스트로 찾음.
+elements = driver.find_elements(By.TAG_NAME, "tr")
+요소 안에서도 검색 가능:
+cols = row.find_elements(By.TAG_NAME, "td")
+
+5. Selenium의 By 종류
+By.ID
+ID로 찾음
+driver.find_element(By.ID, "top_search")
+
+By.CLASS_NAME
+클래스 이름으로 찾음.
+driver.find_element(By.CLASS_NAME, "song")
+클래스 하나만 입력하는 것이 안전함.
+# 잘못될 수 있음
+By.CLASS_NAME, "ellipsis rank02"
+
+여러 클래스는 CSS 선택자를 사용:
+By.CSS_SELECTOR, ".ellipsis.rank02"
+
+By.TAG_NAME
+태그 이름으로 찾음.
+driver.find_elements(By.TAG_NAME, "td")
+
+By.NAME
+name 속성으로 찾음.
+driver.find_element(By.NAME, "keyword")
+
+By.LINK_TEXT
+링크의 글자가 완전히 일치하는 요소를 찾음.
+driver.find_element(By.LINK_TEXT, "로그인")
+
+By.PARTIAL_LINK_TEXT
+링크 글자가 일부 일치하는 요소를 찾음.
+driver.find_element(By.PARTIAL_LINK_TEXT, "로그")
+
+By.CSS_SELECTOR
+CSS 선택자 문법으로 찾음.
+driver.find_element(By.CSS_SELECTOR, "button.like span.cnt")
+
+By.XPATH
+XPath 경로로 찾음.
+driver.find_element(
+    By.XPATH,
+    '//*[@id="top_search"]'
+)
+
+6. Selenium 요소 조작
+
+.click()
+요소를 클릭.
+button.click()
+
+.send_keys()
+입력창에 글자를 입력.
+search_box.send_keys("조용필")
+
+.clear()
+입력창의 기존 내용을 삭제.
+search_box.clear()
+
+.text
+요소 안에 보이는 글자를 가져옴.
+title = element.text
+
+.get_attribute()
+요소의 HTML 속성값을 가져옴.
+link = element.get_attribute("href")
+image = element.get_attribute("src")
+value = element.get_attribute("value")
+
+.is_displayed()
+화면에 표시되어 있는지 확인
+element.is_displayed()
+
+.is_enabled()
+사용 가능한 요소인지 확인
+element.is_enabled()
+
+.is_selected()
+체크박스나 라디오 버튼이 선택됐는지 확인.
+checkbox.is_selected()
+
+.submit()
+폼을 제출.
+search_box.submit()
+
+7. 키보드 입력
+from selenium.webdriver.common.keys import Keys
+
+Enter
+search_box.send_keys(Keys.ENTER)
+
+Tab
+element.send_keys(Keys.TAB)
+
+Escape
+element.send_keys(Keys.ESCAPE)
+
+전체 선택
+element.send_keys(Keys.CONTROL, "a")
+
+삭제
+element.send_keys(Keys.BACKSPACE)
+
+8. Selenium 대기
+페이지가 로딩될 때까지 기다릴 때 사용.
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+wait = WebDriverWait(driver, 10)
+최대 10초 동안 기다림
+
+presence_of_element_located
+HTML 안에 요소가 생길 때까지 기다림
+element = wait.until(
+    EC.presence_of_element_located(
+        (By.ID, "top_search")
+    )
+)
+
+row.find_elements(By.TAG_NAME, "td")
+현재 row 안에 있는 모든 <td> 태그를 찾는 코드예요. 😊
+
+여기서 row는 보통 하나의 <tr> 행입니다.
+
+<tr>
+    <td>체크박스</td>
+    <td>순위</td>
+    <td>곡명</td>
+    <td>아티스트</td>
+    <td>앨범</td>
+</tr>
+이 행에서 실행하면:
+
+cols = row.find_elements(By.TAG_NAME, "td")
+cols에는 <td> 요소들이 리스트처럼 저장됩니다.
+
+cols[0]  # 체크박스 칸
+cols[1]  # 순위 칸
+cols[2]  # 곡명 칸
+cols[3]  # 아티스트 칸
+cols[4]  # 앨범 칸
+각 요소의 글자를 가져오려면 .text를 사용해요.
+
+title = cols[2].text
+artist = cols[3].text
+album = cols[4].text
+구성별로 보면:
+
+row.find_elements(By.TAG_NAME, "td")
+row: 현재 노래 한 줄
+
+find_elements: 조건에 맞는 요소를 전부 찾음
+
+By.TAG_NAME: 태그 이름으로 찾겠다는 뜻
+
+"td": 찾을 태그 이름
+
+참고로 차이는 이렇습니다.
+
+find_element()   # 첫 번째 요소 하나만 찾음
+find_elements()  # 조건에 맞는 요소를 모두 찾아 리스트로 반환
+즉, 이 코드는 현재 노래 행 안의 모든 열을 가져오는 코드입니다. 🔍
+
+
+BY_selector하면 셀렉터만 찾는거야?
+
+거의 맞아요. 다만 정확히는 By.CSS_SELECTOR를 쓰면 CSS 선택자 문법으로 요소를 찾는 것이에요. 😊
+
+row.find_elements(By.CSS_SELECTOR, "td")
+이 코드는 현재 row 안에서 CSS 선택자 "td"에 해당하는 모든 요소를 찾습니다.
+
+예를 들면:
+
+driver.find_element(By.CSS_SELECTOR, "#top_search")
+#top_search → id="top_search"인 요소
+
+driver.find_elements(By.CSS_SELECTOR, ".song")
+.song → class="song"인 모든 요소
+
+driver.find_elements(By.CSS_SELECTOR, "tbody tr")
+<tbody> 안에 있는 모든 <tr>
+
+row.find_element(By.CSS_SELECTOR, "button.like span.cnt")
+button 태그이면서 like 클래스인 요소 안의
+
+span 태그이면서 cnt 클래스인 요소
+
+비교하면:
+
+By.TAG_NAME, "td"
+는 태그 이름만 찾고,
+
+By.CSS_SELECTOR, "td:nth-child(3)"
+는 CSS 선택자를 사용해서 더 구체적으로 찾을 수 있어요.
+
+참고로 이름은 BY_selector가 아니라 보통 이렇게 씁니다.
+
+By.CSS_SELECTOR
+즉, By.CSS_SELECTOR는 셀렉터라는 요소를 찾는 게 아니라, CSS 셀렉터 문법을 이용해 HTML 요소를 찾는 방식입니다. 🔍
+
+
+메모에 적게 셀레니움과 웹크롤링에 쓰이는 함수들 전부 간략하게 정리해줄래?
+
+2초 동안 생각함
+좋아요 😊 메모에 바로 적기 좋게 웹 크롤링에서 자주 쓰는 함수·속성을 requests, BeautifulSoup, Selenium으로 나눠 정리할게요.
+
+1. requests — 웹페이지 요청
+import requests
+requests.get()
+웹페이지에 GET 요청을 보냄.
+
+response = requests.get(url)
+headers
+브라우저처럼 접속하기 위한 정보.
+
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+response = requests.get(url, headers=headers)
+response.status_code
+응답 상태 코드 확인.
+
+print(response.status_code)
+200: 성공
+
+404: 페이지 없음
+
+403: 접근 거부
+
+500: 서버 오류
+
+response.raise_for_status()
+요청에 오류가 있으면 예외 발생.
+
+response.raise_for_status()
+response.text
+응답받은 HTML을 문자열로 가져옴.
+
+html = response.text
+response.json()
+JSON 형식의 응답을 파이썬 자료형으로 변환.
+
+data = response.json()
+2. BeautifulSoup — HTML 분석
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(response.text, "html.parser")
+select()
+CSS 선택자에 맞는 모든 요소를 리스트로 가져옴.
+
+items = soup.select(".item")
+select_one()
+CSS 선택자에 맞는 첫 번째 요소 하나를 가져옴.
+
+item = soup.select_one(".item")
+find()
+조건에 맞는 첫 번째 태그를 찾음.
+
+title = soup.find("h1")
+find_all()
+조건에 맞는 모든 태그를 리스트로 가져옴.
+
+titles = soup.find_all("h1")
+.text
+태그 안의 글자를 가져옴.
+
+text = title.text
+get_text()
+태그 안의 글자를 가져옴.
+
+text = title.get_text()
+공백 제거:
+
+text = title.get_text(strip=True)
+strip()
+문자열 앞뒤 공백과 줄바꿈을 제거.
+
+text = text.strip()
+get()
+HTML 속성값을 가져옴.
+
+link = tag.get("href")
+image = tag.get("src")
+다음 코드와 비슷함:
+
+link = tag["href"]
+단, 속성이 없으면 tag["href"]는 오류가 발생할 수 있음.
+
+.attrs
+태그의 모든 속성을 확인.
+
+print(tag.attrs)
+.parent
+부모 태그를 가져옴.
+
+parent = tag.parent
+.children
+바로 아래 자식 요소들을 가져옴.
+
+for child in tag.children:
+    print(child)
+.find_next()
+현재 태그 다음에 나오는 조건에 맞는 태그를 찾음.
+
+next_tag = tag.find_next("div")
+3. CSS 선택자 문법
+태그 선택
+"div"
+"table"
+"tr"
+클래스 선택
+".song"
+<div class="song">
+ID 선택
+"#top_search"
+<input id="top_search">
+태그와 클래스 함께 선택
+"div.song"
+div 태그이면서 song 클래스인 요소.
+
+하위 요소 선택
+"tbody tr"
+tbody 안에 있는 모든 tr.
+
+바로 아래 자식 선택
+"ul > li"
+ul 바로 아래에 있는 li.
+
+여러 클래스 선택
+"div.ellipsis.rank02"
+ellipsis와 rank02 클래스를 모두 가진 div.
+
+속성 선택
+'input[name="keyword"]'
+n번째 자식 선택
+"td:nth-child(3)"
+세 번째 td.
+
+4. Selenium — 브라우저 조작
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+driver.get()
+해당 주소로 이동.
+
+driver.get("https://www.example.com")
+driver.quit()
+브라우저 전체를 종료.
+
+driver.quit()
+driver.close()
+현재 창 하나만 닫음.
+
+driver.close()
+driver.back()
+이전 페이지로 이동.
+
+driver.back()
+driver.forward()
+다음 페이지로 이동.
+
+driver.forward()
+driver.refresh()
+현재 페이지 새로고침.
+
+driver.refresh()
+driver.current_url
+현재 페이지 주소 확인.
+
+print(driver.current_url)
+driver.title
+현재 페이지 제목 확인.
+
+print(driver.title)
+driver.page_source
+현재 페이지의 HTML 가져오기.
+
+html = driver.page_source
+5. Selenium 요소 찾기
+from selenium.webdriver.common.by import By
+find_element()
+조건에 맞는 요소 하나를 찾음.
+
+element = driver.find_element(By.ID, "top_search")
+find_elements()
+조건에 맞는 모든 요소를 리스트로 찾음.
+
+elements = driver.find_elements(By.TAG_NAME, "tr")
+요소 안에서도 검색 가능:
+
+cols = row.find_elements(By.TAG_NAME, "td")
+현재 row 안의 모든 td를 찾음.
+
+6. Selenium의 By 종류
+By.ID
+ID로 찾음.
+
+driver.find_element(By.ID, "top_search")
+By.CLASS_NAME
+클래스 이름으로 찾음.
+
+driver.find_element(By.CLASS_NAME, "song")
+클래스 하나만 입력하는 것이 안전함.
+
+# 잘못될 수 있음
+By.CLASS_NAME, "ellipsis rank02"
+여러 클래스는 CSS 선택자를 사용:
+
+By.CSS_SELECTOR, ".ellipsis.rank02"
+By.TAG_NAME
+태그 이름으로 찾음.
+
+driver.find_elements(By.TAG_NAME, "td")
+By.NAME
+name 속성으로 찾음.
+
+driver.find_element(By.NAME, "keyword")
+By.LINK_TEXT
+링크의 글자가 완전히 일치하는 요소를 찾음.
+
+driver.find_element(By.LINK_TEXT, "로그인")
+By.PARTIAL_LINK_TEXT
+링크 글자가 일부 일치하는 요소를 찾음.
+
+driver.find_element(By.PARTIAL_LINK_TEXT, "로그")
+By.CSS_SELECTOR
+CSS 선택자 문법으로 찾음.
+
+driver.find_element(By.CSS_SELECTOR, "button.like span.cnt")
+By.XPATH
+XPath 경로로 찾음.
+
+driver.find_element(
+    By.XPATH,
+    '//*[@id="top_search"]'
+)
+7. Selenium 요소 조작
+.click()
+요소를 클릭.
+
+button.click()
+.send_keys()
+입력창에 글자를 입력.
+
+search_box.send_keys("조용필")
+.clear()
+입력창의 기존 내용을 삭제.
+
+search_box.clear()
+.text
+요소 안에 보이는 글자를 가져옴.
+
+title = element.text
+.get_attribute()
+요소의 HTML 속성값을 가져옴.
+
+link = element.get_attribute("href")
+image = element.get_attribute("src")
+value = element.get_attribute("value")
+.is_displayed()
+화면에 표시되어 있는지 확인.
+
+element.is_displayed()
+.is_enabled()
+사용 가능한 요소인지 확인.
+
+element.is_enabled()
+.is_selected()
+체크박스나 라디오 버튼이 선택됐는지 확인.
+
+checkbox.is_selected()
+.submit()
+폼을 제출.
+
+search_box.submit()
+8. 키보드 입력
+from selenium.webdriver.common.keys import Keys
+Enter
+search_box.send_keys(Keys.ENTER)
+Tab
+element.send_keys(Keys.TAB)
+Escape
+element.send_keys(Keys.ESCAPE)
+전체 선택
+element.send_keys(Keys.CONTROL, "a")
+삭제
+element.send_keys(Keys.BACKSPACE)
+9. Selenium 대기
+페이지가 로딩될 때까지 기다릴 때 사용.
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+wait = WebDriverWait(driver, 10)
+최대 10초 동안 기다림.
+
+presence_of_element_located
+HTML 안에 요소가 생길 때까지 기다림.
+
+element = wait.until(
+    EC.presence_of_element_located(
+        (By.ID, "top_search")
+    )
+)
+화면에 보이지 않아도 HTML에 존재하면 통과.
+
+visibility_of_element_located
+요소가 화면에 보일 때까지 기다림.
+element = wait.until(
+    EC.visibility_of_element_located(
+        (By.ID, "top_search")
+    )
+)
+
+element_to_be_clickable
+요소를 클릭할 수 있을 때까지 기다림.
+button = wait.until(
+    EC.element_to_be_clickable(
+        (By.CSS_SELECTOR, "button.search")
+    )
+)
+
+presence_of_all_elements_located
+여러 요소가 HTML에 생길 때까지 기다림.
+rows = wait.until(
+    EC.presence_of_all_elements_located(
+        (By.CSS_SELECTOR, "tbody tr")
+    )
+)
+
+invisibility_of_element_located
+요소가 사라질 때까지 기다림.
+wait.until(
+    EC.invisibility_of_element_located(
+        (By.CLASS_NAME, "loading")
+    )
+)
+
+
+
+
+
+
+
+
+
+
+

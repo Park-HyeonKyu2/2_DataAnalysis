@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>자바스크립트 동적 페이지</title>
+  </head>
+  <body>
+    <h1>오늘의 과일 목록</h1>
+    <div id="fruit-list"></div>
+    <script>
+      const fruits = ["사과", "바나나", "오렌지", "딸기"];
+      const div = document.getElementById("fruit-list");
+      fruits.forEach((fruit) => {
+        div.innerHTML += `<p class="fruit">${fruit}</p>`;
+      });
+    </script>
+  </body>
+</html>

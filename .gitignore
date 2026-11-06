@@ -1,0 +1,6 @@
+﻿venv/
+.env
+__pycache__/
+.ipynb_checkpoints/
+data/online_retail_II.csv
+data/소상공인시장진흥공단_상가(상권)정보_서울_202603.csv
